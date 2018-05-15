@@ -1,205 +1,200 @@
+
 import React, { Component, props } from 'react';
+import logo from './logo.svg';
 import './App.css';
 
-const arr = new Array();
-
+var show = new Array(); //storing the previous calculated values.
 var setHeight = {
-    height: '444px'
-};
+  height: '456px'
+}
 
 class App extends Component {
-    constructor() {
-       super(props); 
-       this.state = {screen: 0, left: 0, operator: '', result: [], showSci: false};
-       this.insertNumber = this.insertNumber.bind(this); //binding the function for use.
-       this.insertOperator = this.insertOperator.bind(this);
-       this.calcResult = this.calcResult.bind(this);
-       this.deleteNum = this.deleteNum.bind(this);
-       this.theta = this.theta.bind(this);
-       this.dispScientific = this.dispScientific.bind(this);
+  constructor() {
+    super(props);
+    this.state = {screen: 0, left: 0, right: 0, operator:'', result: [], dispSci: false };
+    this.numFunc = this.numFunc.bind(this);
+    this.opFunc = this.opFunc.bind(this);
+    this.dispclr = this.dispclr.bind(this);
+    this.eqFunction = this.eqFunction.bind(this);
+    this.theta = this.theta.bind(this);
+    this.test = this.test.bind(this);
+  }
+  
+  test = () => {
+    var orientation = screen.msOrientation || (screen.orientation || screen.mozOrientation || {}).type;
+      if (orientation === "landscape-primary") {
+        setHeight = {
+          height: '456px',
+          width: '526px'
+        };
+        this.setState({dispSci: true});
+      } else if (orientation === "landscape-secondary") {
+        console.log("Mmmh... the screen is upside down!");
+      } else if (orientation === "portrait-secondary" || orientation === "portrait-primary") {
+        console.log("Mmmh... you should rotate your device to landscape");
+        setHeight = {
+          height: '456px'
+        };
+        this.setState({dispSci: false});
+      } else if (orientation === undefined) {
+        console.log("The orientation API isn't supported in this browser :(");
+      } //landscape
+  }
+
+  componentWillMount() { console.log('mounting');
+    window.addEventListener('orientationchange', this.test);
+    this.test();
+  }
+
+  numFunc = (num) => {
+    if(this.state.screen === 0)
+      this.setState({ screen: num });
+    else  
+      this.setState({ screen: (this.state.screen).toString() + num.toString() });
+  }//to insert the number
+
+  opFunc = (op) => {
+    this.setState({operator: op});
+    this.setState({screen: this.state.screen+op})
+    var str = (this.state.screen).length === undefined ? this.state.screen : (this.state.screen).charAt((this.state.screen).length - 1);
+    var operators = ['+', '-', '*', '/', '%'];
+    var found = false;
+    for(var i = 0; i < 5; i++) {
+      if(str === operators[i]){
+        found = true;
+        break;
+      }
     }
-
-    insertNumber = (a) => {
-        if(this.state.screen === 'Error')
-            this.setState({screen: 0});
-        if(this.state.screen === 0)
-            this.setState({screen: a});
-        else
-            this.setState({screen: (this.state.screen).toString() + a.toString()});
-    }// inserting the numbers to the display.
-
-    insertOperator = (op) => {
-        if(this.state.left !== 0)
-            this.setState({left: this.state.screen});
-        try {
-            var str = (this.state.screen).length === undefined ? this.state.screen : (this.state.screen).charAt((this.state.screen).length - 1);
-            var operators = ['+', '-', 'x', '/', '%'];
-            var matched = false;
-            var len = operators.length;
-            for(var i = 0; i < len; i++) {
-                if(operators[i] === str) {
-                    matched = true;
-                    break;
-                }
-            }
-            if(matched)
-                this.setState({screen: (this.state.screen).toString().split(str)[0] + op.toString()});
-            else    
-                this.setState({screen: (this.state.screen).toString() + op.toString()});
-            this.setState({operator: op});
-        }catch(e) {
-            console.log(e);
-        }
-    }// inserting the operator
-
-    calcResult = () => {
-        var ch = (this.state.operator).charAt(0);
-        var res = this.state.screen + ' = ';
-        var right = '';
-        switch(ch) {
-            case '+':
-                right = (this.state.screen).split('+');
-                this.setState({screen: parseInt(right[0], 10) + parseInt(right[1], 10)});
-                res += parseInt(right[0], 10) + parseInt(right[1], 10);
-                arr.push(res);
-                this.setState({result: arr});
-                break;
-            case '-':
-                right = (this.state.screen).split('-');
-                this.setState({screen: parseInt(right[0], 10) - parseInt(right[1], 10)});
-                res +=  parseInt(right[0], 10) - parseInt(right[1], 10);
-                arr.push(res);
-                this.setState({result: arr});
-                break;
-            case 'x':
-                right = (this.state.screen).split('x');
-                this.setState({screen: parseInt(right[0], 10) * parseInt(right[1], 10)});
-                res += parseInt(right[0], 10) * parseInt(right[1], 10);
-                arr.push(res);
-                this.setState({result: arr});
-                break;
-            case '/':
-                right = (this.state.screen).split('/');
-                this.setState({screen: parseInt(right[0], 10) / parseInt(right[1], 10)});
-                res += parseInt(right[0], 10) / parseInt(right[1], 10);
-                arr.push(res);
-                this.setState({result: arr});
-                break;
-            case '%':
-                right = (this.state.screen).split('%');
-                this.setState({screen: parseInt(right[0], 10) % parseInt(right[1], 10)});
-                res += parseInt(right[0], 10) % parseInt(right[1], 10);
-                arr.push(res);
-                this.setState({result: arr});
-                break;
-            default:
-                this.setState({screen: 'Error'});
-                break;
-        }
-    }//calculating the result.
-
-    deleteNum = () => {
-        var len = (this.state.screen).length === undefined ? 1 : (this.state.screen).length;
-        var str = this.state.screen;
-        var res = '';
-        if(len === 1) 
-            this.setState({screen: 0});
-        else {
-            for(var i = 0; i < len-1; i++) {
-                res += str.charAt(i);
-            }
-            this.setState({screen: res});
-        }
-    }// deleting a value in the display
-
-    theta = (data) => {
-        switch(data) {
-            case 'sin':
-                this.setState({screen: Math.sin(this.state.screen *  Math.PI / 180)});
-                break;
-            case 'cos':
-                this.setState({screen: Math.cos(this.state.screen *  Math.PI / 180)});
-                break;
-            case 'tan':
-                this.setState({screen: Math.tan(this.state.screen *  Math.PI / 180)});
-                break;
-            default:
-                this.setState({screen: 'Err'});
-                break;
-        }
-    }//calculating the theta
-
-    dispScientific = () => {
-        if(this.state.showSci) {
-            setHeight = {
-                height: '444px'
-            };
-            this.setState({showSci: false});
-        }
-        else {
-            setHeight = {
-                height: '515px'
-            }
-            this.setState({showSci: true});
-        }
-    }// to show and hide the scientific calculator.
-
-    render() {
-        return (
-            <div className = "App">
-                <div id="background" style={setHeight} >            
-        <div id="result">{this.state.screen}</div>      
-         <div id="main">
-             <div id="first-rows">
-                 <button class="del-bg" id="delete" onClick={() => this.deleteNum()}>Del</button>
-                 <button value="%" class="btn-style operator opera-bg fall-back" onClick={() => this.insertOperator('%')}>%</button>
-                 <button value="+" class="btn-style opera-bg value align operator" onClick={() => this.insertOperator('+')}>+</button>
-                 </div>
-                 
-               <div class="rows">
-             <button value="7" class="btn-style num-bg num first-child" onClick={() => this.insertNumber(7)}>7</button>
-                 <button value="8" class="btn-style num-bg num" onClick={() => this.insertNumber(8)}>8</button>
-                 <button value="9" class="btn-style num-bg num" onClick={() => this.insertNumber(9)}>9</button>
-                 <button value="-" class="btn-style opera-bg operator" onClick={() => this.insertOperator('-')}>-</button>
-                 </div>
-                 
-                 <div class="rows">
-                 <button value="4" class="btn-style num-bg num first-child" onClick={() => this.insertNumber(4)}>4</button>
-                 <button value="5" class="btn-style num-bg num" onClick={() => this.insertNumber(5)}>5</button>
-                 <button value="6" class="btn-style num-bg num" onClick={() => this.insertNumber(6)}>6</button>
-                 <button value="*" class="btn-style opera-bg operator" onClick={() => this.insertOperator('x')}>x</button>
-                 </div>
-                 
-                 <div class="rows">
-                 <button value="1" class="btn-style num-bg num first-child" onClick={() => this.insertNumber(1)}>1</button>
-                 <button value="2" class="btn-style num-bg num" onClick={() => this.insertNumber(2)}>2</button>
-                 <button value="3" class="btn-style num-bg num" onClick={() => this.insertNumber(3)}>3</button>
-                 <button value="/" class="btn-style opera-bg operator" onClick={() => this.insertOperator('/')}>/</button>
-                 </div>
-                 
-                 <div class="rows">
-                 <button value="0" class="num-bg zero" id="delete" onClick={() => this.insertNumber(0)}>0</button>
-                 <button value="." class="btn-style num-bg period fall-back" onClick={() => this.insertOperator('.')}>.</button>
-                 <button value="=" id="eqn-bg" class="eqn align" onClick={this.calcResult}>=</button>
-                 </div>
-
-                 <div class="rows">
-                 <button class="num-bg zero" onClick={() => this.dispScientific()}>{this.state.showSci ? 'Hide' : 'Show'} Scientific Calculator</button>
-                 </div>
-
-                {this.state.showSci ? 
-                 <div class="rows">
-                 <button value="sin" class="btn-style num-bg num first-child" onClick={() => this.theta('sin')}>sin</button>
-                 <button value="cos" class="btn-style num-bg num" onClick={() => this.theta('cos')}>cos</button>
-                 <button value="tan" class="btn-style num-bg num" onClick={() => this.theta('tan')}>tan</button>
-                 </div> : ''}
-
-             </div>
-         </div>
-             {this.state.result.map(n => {return(<div><span>{n}</span></div>)})}
-         </div>
-        );
+    try {
+      if(found)
+        this.setState({screen: (this.state.screen).split(str)[0] + op});
+    }catch(e) {
+      console.log(e);
     }
+  }//operator function
+ 
+  dispclr = () => {
+    var len = (this.state.screen).length === undefined ? 1 : (this.state.screen).length;
+    if(len === 1) 
+      this.setState({screen: 0});
+    else {
+      var str = this.state.screen;
+      var res = '';
+      for(var i = 0; i < len-1; i++) {
+        res += str.charAt(i);
+      }
+      this.setState({screen: res});
+    }
+  }//to clear the display using delete
+
+  eqFunction = () => {
+    var oper = (this.state.operator).charAt(0);
+    var str  = (this.state.screen).split(oper);
+    var res = this.state.screen + ' = ';
+    console.log(res);
+    switch(oper) {
+      case '+':
+        this.setState({screen: parseInt(str[0]) + parseInt(str[1])});
+        res += parseInt(str[0]) + parseInt(str[1]);
+        show.push(res);
+        this.setState({ result: show});
+        console.log(this.state.result);
+        break;
+      case '-':
+        this.setState({screen: parseInt(str[0]) - parseInt(str[1])});
+        res += parseInt(str[0]) - parseInt(str[1]);
+        show.push(res);
+        this.setState({ result: show});
+        break;
+      case '*':
+        this.setState({screen: parseInt(str[0]) * parseInt(str[1])});
+        res += parseInt(str[0]) * parseInt(str[1]);
+        show.push(res);
+        this.setState({ result: show});
+        break;
+      case '/':
+        this.setState({screen: parseInt(str[0]) / parseInt(str[1])});
+        res += parseInt(str[0]) / parseInt(str[1]);
+        show.push(res);
+        this.setState({ result: show});
+         break;
+      default:
+        console.log('Error');
+        break;
+    }
+  }// equals function
+
+  theta = (t) => {
+    console.log(this.state.screen);
+    switch(t) {
+        case 'sin':
+            this.setState({screen: Math.sin(this.state.screen * Math.PI / 180)});
+            break;
+        case 'cos': 
+            this.setState({screen: Math.cos(this.state.screen * Math.PI / 180)});
+            break;
+        case 'tan':
+            this.setState({screen: Math.tan(this.state.screen * Math.PI / 180)});
+            break;
+        default:
+            this.setState({screen: 'err'})
+            break;
+        }    
+  }//calculating theta function
+ 
+  dispSci = () => {
+    if(this.state.dispSci) {
+      this.setState({dispSci: false});
+      setHeight = {
+        height: '456px'
+      }
+    }
+    else {
+      this.setState({dispSci: true});
+      setHeight = {
+        height: '534px'
+      }
+    }
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <div id="calculator" style = {setHeight}>
+      <div id="total"> {this.state.screen}
+      </div>
+        <div id="operators">
+          <a onClick={() => this.opFunc('+')}>+</a>
+          <a onClick={() => this.opFunc('-')}>-</a>
+          <a onClick={() => this.opFunc('/')}>/</a>
+          <a onClick={() => this.opFunc('*')}>*</a>
+          <a onClick={() => this.eqFunction()}>=</a>
+        </div>
+        <div id="numbers">
+          <a onClick={() => this.numFunc(1)}>1</a>
+          <a onClick={() => this.numFunc(2)}>2</a>
+          <a onClick={() => this.numFunc(3)}>3</a>
+          <a onClick={() => this.numFunc(4)}>4</a>
+          <a onClick={() => this.numFunc(5)}>5</a>
+          <a onClick={() => this.numFunc(6)}>6</a>
+          <a onClick={() => this.numFunc(7)}>7</a>
+          <a onClick={() => this.numFunc(8)}>8</a>
+          <a onClick={() => this.numFunc(9)}>9</a>
+          <a onClick={() => this.dispclr()}>C</a>
+          <a onClick={() => this.numFunc(0)}>0</a>
+          {!this.state.dispSci ? <a style={{fontSize:'22px'}} onClick={() => this.dispSci()}> {this.state.dispSci ? 'hide': 'show'}</a> : '' }
+        </div>
+        {this.state.dispSci ? 
+        <div id="numbers">
+          <a onClick={() => this.theta('sin')}>sin</a>
+          <a onClick={() => this.theta('cos')}>cos</a>
+          <a onClick={() => this.theta('tan')}>tan</a>
+        </div> : ''}
+    </div>
+      {this.state.result.map(n => {return(<div>{n}</div>)})}
+      </div>
+    );
+  }
 }
 
 export default App;

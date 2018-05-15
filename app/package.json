@@ -1,12 +1,14 @@
 {
-  "name": "react-calc",
+  "name": "calc",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
-    "react-scripts": "1.1.4"
+    "react-screen-orientation": "0.0.3",
+    "react-scripts": "0.9.5"
   },
+  "devDependencies": {},
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
