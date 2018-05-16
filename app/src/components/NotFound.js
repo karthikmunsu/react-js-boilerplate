@@ -1,10 +1,10 @@
 import React from 'react';
 
-export class Signup extends React.Component {
+export class NotFound extends React.Component {
     render() {
         return (
             <div>
-                im Signup.
+                404 Page Not Found.
             </div>
         );
     }

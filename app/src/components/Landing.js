@@ -1,16 +1,15 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
+import History from './History';
 
 export class Landing extends React.Component {
-    goBackk = () => {
-        browserHistory.goBack();
+    goPrevious = () => {
+        History.goBack();
     }
     render() {
         return (
             <div>
-                im a Landing page <br/>
-                username: {this.props.params.user_name}
-                <button type="button" onClick={this.goBackk}>Go Back</button>
+                im Landing.
+                <button type="button" onClick={this.goPrevious}>Go Back</button>
             </div>
         );
     }

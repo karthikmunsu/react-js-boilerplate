@@ -1,15 +1,15 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
+import History from './History';
 
 export class Login extends React.Component {
     gotoLanding = () => {
-        browserHistory.push('/landing/react_users');
+        History.push('/landing');
     }
     render() {
         return (
             <div>
-                im a Login page
-                <button type="button" onClick={this.gotoLanding}>Goto Landing</button>
+                im Login.
+                <button type="Button" onClick={this.gotoLanding}>Goto Landing </button>
             </div>
         );
     }
