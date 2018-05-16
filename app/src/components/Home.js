@@ -1,12 +1,13 @@
-import React from 'react';
-import {Header} from './Header';
+import React, { props } from 'react';
+import { Header } from './Header';
 
 export class Home extends React.Component {
     render() {
-        return(
+        return (
             <div>
                 <Header/>
-                im Home
+                show me 
+                {this.props.children}
             </div>
         );
     }

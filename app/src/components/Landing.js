@@ -1,17 +1,17 @@
-import React, { props } from 'react';
-import { Header } from './Header';
+import React from 'react';
+import { browserHistory } from 'react-router';
 
 export class Landing extends React.Component {
-    constructor() {
-        super(props);
+    goBackk = () => {
+        browserHistory.goBack();
     }
     render() {
         return (
-                <div>
-                    <Header/>
-                    welcome to REACT for Geeks.<br/>
-                    Username: <span style={{color:'Red'}}><b>{this.props.params.id}</b></span>
-                </div>
+            <div>
+                im a Landing page <br/>
+                username: {this.props.params.user_name}
+                <button type="button" onClick={this.goBackk}>Go Back</button>
+            </div>
         );
     }
 }
