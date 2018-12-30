@@ -41,7 +41,7 @@ class App extends Component {
       } //landscape
   }
 
-  componentWillMount() { console.log('mounting testing the autopull');
+  componentWillMount() { console.log('mounting');
     window.addEventListener('orientationchange', this.test);
     this.test();
   }
